@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE MOVIES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-bg-overlay"></div>
+        <div class="login-container">
+            <h1>THE MOVIES</h1>
+            <p>Who is watching?</p>
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="Enter your secret key" autofocus>
+                <button id="login-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <p id="login-error" class="error-msg hidden">Incorrect password.</p>
+        </div>
+    </div>
+
+    <!-- App Container (Hidden until login) -->
+    <div id="app-container" class="screen hidden">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo">THE MOVIES</div>
+                <ul class="nav-links">
+                    <li class="active" onclick="switchTab('home')">Home</li>
+                    <li onclick="switchTab('series')">TV Series</li>
+                    <li onclick="switchTab('movie')">Movies</li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <button id="upload-btn" class="nav-btn hidden"><i class="fa-solid fa-plus"></i> Upload</button>
+                <button id="members-btn" class="nav-btn hidden"><i class="fa-solid fa-users"></i> Members</button>
+                <div class="user-profile">
+                    <span id="user-name">User</span>
+                    <i class="fa-solid fa-user-astronaut"></i>
+                    <button id="logout-btn"><i class="fa-solid fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header id="hero" class="hero">
+            <div class="hero-content">
+                <h1 id="hero-title">Movie Title</h1>
+                <p id="hero-desc">Movie description goes here...</p>
+                <div class="hero-buttons">
+                    <button id="hero-play-btn" class="btn primary"><i class="fa-solid fa-play"></i> Play</button>
+                    <button id="hero-download-btn" class="btn secondary"><i class="fa-solid fa-download"></i>
+                        Download</button>
+                </div>
+
+                <!-- Episode List (Series Only) -->
+                <div id="hero-episodes" class="hero-episodes hidden">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+            <div class="hero-gradient"></div>
+        </header>
+
+        <!-- Movie Rows -->
+        <main class="content">
+            <section class="category-row" id="continue-watching-section">
+                <h2>Continue Watching for You</h2>
+                <div class="movie-slider" id="continue-watching-grid">
+                    <!-- Continue Watching Cards -->
+                </div>
+            </section>
+
+            <section class="category-row">
+                <h2>New Releases</h2>
+                <div class="movie-slider" id="new-releases-grid">
+                    <!-- Movie Cards Injected Here -->
+                </div>
+            </section>
+
+            <section class="category-row">
+                <h2>Trending Now</h2>
+                <div class="movie-slider" id="trending-grid">
+                    <!-- Movie Cards Injected Here -->
+                </div>
+            </section>
+
+            <!-- Dynamic Genre Rows -->
+            <div id="genre-rows-container"></div>
+        </main>
+
+    </div>
+
+    <!-- Video Player Overlay -->
+    <div id="video-player" class="overlay hidden">
+        <button id="close-player" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        <div class="video-wrapper">
+            <iframe id="main-video-frame" src="" frameborder="0"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture" referrerpolicy="no-referrer"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Members Modal -->
+    <div id="members-modal" class="overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manage Members</h2>
+                <button id="close-members" class="close-btn-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="members-section">
+                <h3>Current Members</h3>
+                <div id="members-list">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <hr style="border: 1px solid #333; margin: 1rem 0;">
+
+            <div class="members-section">
+                <h3>Add New Member</h3>
+                <form id="add-member-form">
+                    <div class="form-group row">
+                        <div class="col">
+                            <input type="text" id="u-name" required placeholder="Name"
+                                style="color:white; background:#333; border:1px solid #444; padding:0.8rem; width:100%">
+                        </div>
+                        <div class="col">
+                            <input type="text" id="u-pass" required placeholder="Password"
+                                style="color:white; background:#333; border:1px solid #444; padding:0.8rem; width:100%">
+                        </div>
+                        <div class="col" style="flex: 0.5">
+                            <button type="submit" class="btn primary" style="width:100%">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Series Details Screen (Full Page Overlay) -->
+    <div id="series-screen" class="series-screen hidden">
+        <button id="close-series-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+
+        <div class="series-hero" id="s-hero-bg">
+            <div class="series-hero-content">
+                <h1 id="s-title">Series Title</h1>
+                <p id="s-desc">Series Description...</p>
+                <div class="series-actions">
+                    <button id="s-play-btn" class="btn primary"><i class="fa-solid fa-play"></i> Play S1:E1</button>
+                    <button id="s-download-btn" class="btn secondary"><i class="fa-solid fa-download"></i>
+                        Download</button>
+                    <button id="s-delete-btn" class="btn danger hidden"><i class="fa-solid fa-trash"></i> Delete
+                        Series</button>
+                </div>
+            </div>
+            <div class="hero-gradient"></div>
+        </div>
+
+        <div class="series-content-container">
+            <div class="season-header">
+                <h3>Episodes</h3>
+                <select id="s-season-select" class="season-selector-large">
+                    <!-- Options injected -->
+                </select>
+            </div>
+            <div id="s-episodes-grid" class="episodes-grid">
+                <!-- Episodes injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Content</h2>
+                <button id="close-upload" class="close-btn-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="upload-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="m-title" required placeholder="Movie Name">
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label>Type</label>
+                        <select id="m-type"
+                            style="width: 100%; padding: 0.8rem; background: #333; color: white; border: 1px solid #444; border-radius: 4px;"
+                            onchange="toggleSeriesFields()">
+                            <option value="movie">Movie</option>
+                            <option value="series">TV Series</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>Genre</label>
+                        <select id="m-genre"
+                            style="width: 100%; padding: 0.8rem; background: #333; color: white; border: 1px solid #444; border-radius: 4px;">
+                            <option value="Action">Action</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Documentary">Documentary</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Series Specific Fields -->
+                <div id="series-fields" class="hidden">
+                    <div class="form-group">
+                        <label>Series Name (Grouping)</label>
+                        <input type="text" id="m-series-name" placeholder="e.g. Kurukshetra">
+                        <small>Episodes with exact same name will be grouped.</small>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label>Season #</label>
+                            <input type="number" id="m-season" placeholder="1">
+                        </div>
+                        <div class="col">
+                            <label>Episode #</label>
+                            <input type="number" id="m-episode" placeholder="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Episode Title (Optional)</label>
+                        <input type="text" id="m-ep-title" placeholder="e.g. The Beginning">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Thumbnail Image</label>
+
+                    <!-- File Upload Option -->
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-btn">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span id="file-name">Choose Image File</span>
+                        </div>
+                        <input type="file" id="m-thumb-file" accept="image/*">
+                    </div>
+                    <div id="upload-progress" class="upload-status hidden">Uploading... 0%</div>
+
+                    <div style="text-align: center; margin: 0.5rem; color: #666;">- OR -</div>
+
+                    <input type="url" id="m-thumb-url" placeholder="https://image.tmdb.org/...">
+                </div>
+                <div class="form-group">
+                    <label>Video URL (For Streaming)</label>
+                    <input type="url" id="m-video" required
+                        placeholder="YouTube, Drive, or Stream Link (e.g. strmup.cc/...)">
+                </div>
+                <div class="form-group">
+                    <label>Download URL (Optional)</label>
+                    <input type="url" id="m-download" placeholder="Mediafire, Drive, or Direct Link">
+                    <small>Link for the 'Download' button.</small>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="m-desc" rows="3" placeholder="Plot summary..."></textarea>
+                </div>
+
+                <!-- Multi-Audio Checkbox -->
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+                    <input type="checkbox" id="m-multi-audio" style="width:auto; transform:scale(1.2);">
+                    <label for="m-multi-audio" style="margin:0; color:white;">Is this a Multi-Audio file?</label>
+                </div>
+
+                <button type="submit" class="btn primary full-width">Add to Library</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audio Caution Modal -->
+    <div id="audio-caution-modal" class="overlay hidden">
+        <div class="modal-content" style="text-align: center; max-width: 500px;">
+            <i class="fa-solid fa-triangle-exclamation"
+                style="font-size: 3rem; color: #FFC107; margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 1rem;">Multi-Audio Detected</h2>
+            <p style="color: #ccc; margin-bottom: 2rem; line-height: 1.5;">
+                Multi-Audio File Detected. You can watch here with only <strong>* 1 language *</strong> or Download to
+                choose your desired language.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="caution-play-btn" class="btn primary">Watch Here</button>
+                <button id="caution-download-btn" class="btn secondary"><i class="fa-solid fa-download"></i>
+                    Download</button>
+            </div>
+            <button id="close-caution" class="close-btn-modal" style="top: 15px; right: 15px; position:absolute;"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <script type="module" src="data.js"></script>
+    <script defer src="script.js"></script>
+</body>
+
+</html>
